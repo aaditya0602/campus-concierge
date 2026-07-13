@@ -125,8 +125,28 @@ async function speakKokoro(text: string, mySession: number) {
   }
 }
 
-export function speak(text: string) {
+// Strip markdown/emoji so TTS never reads "asterisk asterisk" — applied to
+// everything spoken, including backend-provided speech text (belt and braces).
+export function toSpeakable(text: string): string {
+  return text
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`([^`]*)`/g, '$1')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^\s*(?:[-*•]|\d+\.)\s+/gm, '')
+    .replace(/[*_~#|>]/g, '')
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, '')
+    .replace(/\s*\n+\s*/g, '. ')
+    .replace(/\.(\s*\.)+/g, '.')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+}
+
+export function speak(rawText: string) {
   stopSpeaking()
+  const text = toSpeakable(rawText)
+  if (!text) return
   const mySession = session
   if (state === 'ready') {
     speakKokoro(text, mySession).catch(() => {

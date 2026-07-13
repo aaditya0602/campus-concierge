@@ -109,7 +109,9 @@ async def _ask_llm(query: str) -> dict:
             model=LLM_MODEL, messages=messages, tools=TOOLS, temperature=0.3)
         msg = resp.choices[0].message
         if not msg.tool_calls:
-            return {"answer": msg.content or "(no answer)", "sources": sources}
+            answer = msg.content or "(no answer)"
+            return {"answer": answer, "sources": sources,
+                    "speech": await _speech_version(client, answer)}
         messages.append({"role": "assistant", "content": msg.content,
                          "tool_calls": [tc.model_dump() for tc in msg.tool_calls]})
         for tc in msg.tool_calls:
@@ -126,6 +128,29 @@ async def _ask_llm(query: str) -> dict:
                              "content": json.dumps(result, default=str)})
     return {"answer": "Sorry, I couldn't finish answering that — try a simpler question.",
             "sources": sources}
+
+
+async def _speech_version(client, answer: str) -> str | None:
+    """Rewrite the display answer as short natural speech for TTS (None on failure)."""
+    try:
+        resp = await client.chat.completions.create(
+            model=LLM_MODEL,
+            messages=[
+                {"role": "system", "content":
+                    "Rewrite the given assistant reply as what a friendly voice "
+                    "assistant would actually say out loud. Natural spoken English, "
+                    "at most 55 words, complete sentences. No markdown, no symbols, "
+                    "no emoji, no bullet points. Never enumerate long lists — mention "
+                    "the two or three best highlights and offer the rest ('and a few "
+                    "more'). Keep all specific times and places you mention accurate."},
+                {"role": "user", "content": answer},
+            ],
+            temperature=0.5,
+        )
+        text = (resp.choices[0].message.content or "").strip()
+        return text or None
+    except Exception:
+        return None
 
 
 async def _keyword_fallback(query: str) -> dict:

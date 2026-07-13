@@ -243,6 +243,7 @@ class AskIn(BaseModel):
 class AskOut(BaseModel):
     answer: str
     sources: list[str]
+    speech: str | None = None  # voice-friendly rewrite of answer, when available
 
 
 @app.post("/api/ask", response_model=AskOut)

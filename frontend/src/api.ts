@@ -156,6 +156,7 @@ export const eventsApi = {
 export interface AskResponse {
   answer: string
   sources: string[]
+  speech?: string | null
 }
 
 export const assistantApi = {

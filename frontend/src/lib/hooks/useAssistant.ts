@@ -45,7 +45,7 @@ export function useAssistant() {
     try {
       const res = await assistantApi.ask(text)
       setMessages((m) => [...m, { role: 'assistant', text: res.answer, sources: res.sources }])
-      speak(res.answer)
+      speak(res.speech ?? res.answer)
     } catch (e: unknown) {
       const friendly =
         e instanceof ApiError
