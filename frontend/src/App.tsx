@@ -1,26 +1,76 @@
-import BusCard from './components/BusCard'
-import DiningCard from './components/DiningCard'
-import EventsCard from './components/EventsCard'
-import AssistantPanel from './components/AssistantPanel'
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Lenis from 'lenis'
+
+import { Github } from 'lucide-react'
+
+import Navbar from '@/components/layout/Navbar'
+import ChatWidget from '@/components/layout/ChatWidget'
+import Home from '@/pages/Home'
+import Bus from '@/pages/Bus'
+import Dining from '@/pages/Dining'
+import Events from '@/pages/Events'
+
+function useLenis() {
+  useEffect(() => {
+    const lenis = new Lenis()
+    let rafId: number
+    function raf(time: number) {
+      lenis.raf(time)
+      rafId = requestAnimationFrame(raf)
+    }
+    rafId = requestAnimationFrame(raf)
+    return () => {
+      cancelAnimationFrame(rafId)
+      lenis.destroy()
+    }
+  }, [])
+}
+
+function Footer() {
+  return (
+    <footer className="mt-12 border-t border-border">
+      <div className="container flex flex-col items-center justify-between gap-2 py-6 text-sm text-muted-foreground sm:flex-row">
+        <p>
+          Developed by{' '}
+          {/* TODO: replace # with real portfolio URL */}
+          <a href="#" className="font-medium text-primary hover:underline">
+            Aaditya Arora
+          </a>
+        </p>
+        <a
+          href="https://github.com/aaditya0602/campus-concierge"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 hover:text-foreground"
+        >
+          <Github className="h-4 w-4" />
+          Source on GitHub
+        </a>
+      </div>
+    </footer>
+  )
+}
 
 function App() {
+  useLenis()
+
   return (
-    <div className="min-h-screen bg-neutral-100 pb-24 dark:bg-neutral-950">
-      <header className="bg-vt-maroon px-4 py-4 text-white shadow-md sm:px-6">
-        <h1 className="text-xl font-bold sm:text-2xl">Campus Concierge</h1>
-        <p className="text-xs text-white/80 sm:text-sm">Your unofficial guide to Virginia Tech</p>
-      </header>
-
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <BusCard />
-          <DiningCard />
-          <EventsCard />
+    <BrowserRouter>
+      <div className="flex min-h-screen flex-col bg-background">
+        <Navbar />
+        <div className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/bus" element={<Bus />} />
+            <Route path="/dining" element={<Dining />} />
+            <Route path="/events" element={<Events />} />
+          </Routes>
         </div>
-      </main>
-
-      <AssistantPanel />
-    </div>
+        <Footer />
+        <ChatWidget />
+      </div>
+    </BrowserRouter>
   )
 }
 

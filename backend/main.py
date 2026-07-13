@@ -1,4 +1,6 @@
 """Campus Concierge API: live Blacksburg Transit, VT dining, campus events, transit routing."""
+import os
+
 from dotenv import load_dotenv
 
 load_dotenv()  # before providers read env
@@ -12,9 +14,12 @@ from providers import assistant, bt, dining, events, maps
 
 app = FastAPI(title="Campus Concierge API", version="2.0.0")
 
+# Extra origins (e.g. the deployed frontend) via ALLOWED_ORIGINS=comma,separated
+_extra_origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=["http://localhost:3000", "http://localhost:5173", *_extra_origins],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

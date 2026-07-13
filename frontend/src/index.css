@@ -3,45 +3,96 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Light mode: very light warm-gray background, VT maroon as primary, burnt orange as accent/ring. */
+    --background: 30 20% 98%;
+    --foreground: 20 8% 12%;
+
+    --card: 30 25% 100%;
+    --card-foreground: 20 8% 12%;
+
+    --popover: 30 25% 100%;
+    --popover-foreground: 20 8% 12%;
+
+    --primary: 330 100% 19%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 30 15% 94%;
+    --secondary-foreground: 330 100% 19%;
+
+    --muted: 30 10% 93%;
+    --muted-foreground: 210 3% 40%;
+
+    --accent: 12 73% 46%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 30 10% 88%;
+    --input: 30 10% 88%;
+    --ring: 12 73% 46%;
+
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    /* Dark mode: near-black background, brighter maroon/orange so they still read on dark surfaces. */
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
+
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 330 85% 32%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 96%;
+
+    --muted: 0 0% 14%;
+    --muted-foreground: 210 3% 65%;
+
+    --accent: 12 80% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 12 80% 55%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: auto; /* Lenis drives smooth scroll itself */
   }
-  
+
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-background text-foreground;
   }
 }
 
-@layer components {
-  .btn-primary {
-    @apply bg-vt-orange hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+@layer utilities {
+  /* Route-change fade, applied to the page wrapper on mount. */
+  .page-enter {
+    animation: fade-in 0.25s ease-out both;
   }
-  
-  .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-  }
-  
-  .chat-bubble {
-    @apply max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm;
-  }
-  
-  .chat-bubble-user {
-    @apply bg-vt-orange text-white ml-auto;
-  }
-  
-  .chat-bubble-assistant {
-    @apply bg-white text-gray-800 border border-gray-200;
-  }
-  
-  .mic-button {
-    @apply w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg;
-  }
-  
-  .mic-button-listening {
-    @apply bg-red-500 hover:bg-red-600 text-white animate-pulse;
-  }
-  
-  .mic-button-idle {
-    @apply bg-vt-orange hover:bg-orange-700 text-white;
-  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
